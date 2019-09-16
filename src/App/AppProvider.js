@@ -18,7 +18,8 @@ export class AppProvider extends React.Component {
 			addCoin: this.addCoin,
 			removeCoin: this.removeCoin,
 			isInFavorites: this.isInFavorites,
-			confirmFavorites: this.confirmFavorites
+			confirmFavorites: this.confirmFavorites,
+			setFilteredCoins: this.setFilteredCoins
 		}
 		//the state properties here can be accessed within the callback functions for
 		//AppContext.Consumer rendering (i.e.: AppBar.js)
@@ -71,7 +72,9 @@ export class AppProvider extends React.Component {
 		//so it can use the spread operator to replace the default favorites array state property
 	}
 
-	setPage = page => this.setState({page})
+	setPage = page => this.setState({page});
+
+	setFilteredCoins = (filteredCoins) => this.setState({filteredCoins});
 
 	render() {
 		return (
