@@ -19,6 +19,7 @@ export class AppProvider extends React.Component {
 			removeCoin: this.removeCoin,
 			isInFavorites: this.isInFavorites,
 			confirmFavorites: this.confirmFavorites,
+			setCurrentFavorite: this.setCurrentFavorite,
 			setFilteredCoins: this.setFilteredCoins
 		}
 		//the state properties here can be accessed within the callback functions for
@@ -43,6 +44,7 @@ export class AppProvider extends React.Component {
 
 	componentDidMount = () => {
 		this.fetchCoins();
+		this.fetchPrices();
 	}
 
 	fetchCoins = async () => {
@@ -50,14 +52,51 @@ export class AppProvider extends React.Component {
 		this.setState({coinList});
 	}
 
+	fetchPrices = async () => {
+		if(this.state.firstVisit) return;
+		let prices = await this.prices();
+		//await for the array of promises to resolve?
+		prices = prices.filter(price => Object.keys(price).length);
+		//if there is no tile in dashboard it means it got filtered out
+		this.setState({prices});
+	}
+
+	prices = async () => {
+		let returnData = [];
+		for(let i = 0; i < this.state.favorites.length; i++) {
+			try {
+				let priceData = await cc.priceFull(this.state.favorites[i], 'USD');
+				returnData.push(priceData);
+			} catch(e) {
+				console.warn('Fetch price error: ', e);
+			}
+		}
+		return returnData;
+	}
+
 	confirmFavorites =() => {
+		let currentFavorite = this.state.favorites[0];
 		this.setState({
 			firstVisit: false,
+			currentFavorite,
 			page: 'dashboard'
+		}, () => {
+			this.fetchPrices();
 		});
 		localStorage.setItem('cryptoDash', JSON.stringify({
-			favorites: this.state.favorites
+			favorites: this.state.favorites,
+			currentFavorite
 		}));
+	}
+
+	setCurrentFavorite = (sym) => {
+		this.setState({
+			currentFavorite: sym
+		});
+		localStorage.setItem('cryptoDash', JSON.stringify({
+			...JSON.parse(localStorage.getItem('cryptoDash')),
+			currentFavorite: sym
+		}))
 	}
 
 	savedSettings() {
@@ -65,9 +104,9 @@ export class AppProvider extends React.Component {
 		if(!cryptoDashData) {
 			return {page: 'settings', firstVisit: true}
 		}
-		let {favorites} = cryptoDashData;
+		let {favorites, currentFavorite} = cryptoDashData;
 		//favorites is an array object with list of favorites
-		return {favorites};
+		return {favorites, currentFavorite};
 		//savedSettings needs to return an object {} containing the array of the favorites
 		//so it can use the spread operator to replace the default favorites array state property
 	}
