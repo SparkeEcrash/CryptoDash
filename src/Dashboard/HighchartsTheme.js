@@ -1,3 +1,5 @@
+import {lightTheme} from "../Shared/Styles";
+
 export default {
 	colors: [
 		'#61d936',
@@ -10,11 +12,11 @@ export default {
 		'#1B2839'
 	],
 	chart: {
-			backgroundColor: '#061a44',
+			backgroundColor: lightTheme ? 'white' : '#061a44',
 			borderColor: '#000000',
 			borderWidth: 0,
 			className: 'dark-container',
-			plotBackgroundColor: '#061a44',
+			plotBackgroundColor: lightTheme ? 'white' : '#061a44',
 			plotBorderColor: '#CCCCCC',
 			plotBorderWidth: 0
 	},
@@ -106,7 +108,7 @@ export default {
 			}
 	},
 	legend: {
-			backgroundColor: 'rgba(0, 0, 0, 0.5)',
+			backgroundColor: 'rgba(0, 0, 0, 0)',
 			itemStyle: {
 					font: '9pt Trebuchet MS, Verdana, sans-serif',
 					color: '#A0A0A0'
